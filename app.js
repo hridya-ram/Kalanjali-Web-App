@@ -95,64 +95,73 @@ const BASE_EVENTS = [
     { id: 61, name: "Light Music", type: "Individual", isBalolsavam: true, categoryId: "C1", duration: "5 Minutes" }
 ];
 
+// Base Events Matrix (1 to 61) as per official schedule
+BASE_EVENTS.forEach(be => {
+    if (!be.description) {
+        be.description = `Competition event for ${be.name} (${be.type} - Duration: ${be.duration}).`;
+    }
+});
+
 // Helper to expand base events list into sub-events schedule based on official codes
 function generateScheduledEvents() {
     const list = [];
     BASE_EVENTS.forEach(be => {
+        const createObj = (suffix, nameText, genderVal, ageGroupVal) => {
+            return {
+                id: suffix ? `${be.id}${suffix}` : `${be.id}`,
+                name: `${be.name}${nameText ? ' ' + nameText : ''}`,
+                baseId: be.id,
+                categoryId: be.categoryId,
+                gender: genderVal,
+                duration: be.duration,
+                type: be.type,
+                ageGroup: ageGroupVal,
+                isCompleted: false,
+                description: be.description
+            };
+        };
+
         if (be.isStandard) {
-            // Suffix A (Sub Junior), B (Junior), C (Senior)
-            list.push({ id: `${be.id}A`, name: `${be.name} (Sub Junior, 9-13)`, baseId: be.id, categoryId: be.categoryId, gender: "NA", duration: be.duration, type: be.type, ageGroup: "Sub Junior (9-13)", isCompleted: false });
-            list.push({ id: `${be.id}B`, name: `${be.name} (Junior, 13-18)`, baseId: be.id, categoryId: be.categoryId, gender: "NA", duration: be.duration, type: be.type, ageGroup: "Junior (13-18)", isCompleted: false });
-            list.push({ id: `${be.id}C`, name: `${be.name} (Senior, 18-25)`, baseId: be.id, categoryId: be.categoryId, gender: "NA", duration: be.duration, type: be.type, ageGroup: "Senior (18-25)", isCompleted: false });
+            list.push(createObj("A", "(Sub Junior, 9-13)", "NA", "Sub Junior (9-13)"));
+            list.push(createObj("B", "(Junior, 13-18)", "NA", "Junior (13-18)"));
+            list.push(createObj("C", "(Senior, 18-25)", "NA", "Senior (18-25)"));
         }
         else if (be.isGenderSplit) {
-            // Suffix A (Sub Junior Boys), A1 (Sub Junior Girls)
-            // Suffix B (Junior Boys), B1 (Junior Girls)
-            // Suffix C (Senior Boys), C1 (Senior Girls)
-            list.push({ id: `${be.id}A`, name: `${be.name} (Sub Junior Boys, 9-13)`, baseId: be.id, categoryId: be.categoryId, gender: "Male", duration: be.duration, type: be.type, ageGroup: "Sub Junior (9-13)", isCompleted: false });
-            list.push({ id: `${be.id}A1`, name: `${be.name} (Sub Junior Girls, 9-13)`, baseId: be.id, categoryId: be.categoryId, gender: "Female", duration: be.duration, type: be.type, ageGroup: "Sub Junior (9-13)", isCompleted: false });
-            
-            list.push({ id: `${be.id}B`, name: `${be.name} (Junior Boys, 13-18)`, baseId: be.id, categoryId: be.categoryId, gender: "Male", duration: be.duration, type: be.type, ageGroup: "Junior (13-18)", isCompleted: false });
-            list.push({ id: `${be.id}B1`, name: `${be.name} (Junior Girls, 13-18)`, baseId: be.id, categoryId: be.categoryId, gender: "Female", duration: be.duration, type: be.type, ageGroup: "Junior (13-18)", isCompleted: false });
-            
-            list.push({ id: `${be.id}C`, name: `${be.name} (Senior Boys, 18-25)`, baseId: be.id, categoryId: be.categoryId, gender: "Male", duration: be.duration, type: be.type, ageGroup: "Senior (18-25)", isCompleted: false });
-            list.push({ id: `${be.id}C1`, name: `${be.name} (Senior Girls, 18-25)`, baseId: be.id, categoryId: be.categoryId, gender: "Female", duration: be.duration, type: be.type, ageGroup: "Senior (18-25)", isCompleted: false });
+            list.push(createObj("A", "(Sub Junior Boys, 9-13)", "Male", "Sub Junior (9-13)"));
+            list.push(createObj("A1", "(Sub Junior Girls, 9-13)", "Female", "Sub Junior (9-13)"));
+            list.push(createObj("B", "(Junior Boys, 13-18)", "Male", "Junior (13-18)"));
+            list.push(createObj("B1", "(Junior Girls, 13-18)", "Female", "Junior (13-18)"));
+            list.push(createObj("C", "(Senior Boys, 18-25)", "Male", "Senior (18-25)"));
+            list.push(createObj("C1", "(Senior Girls, 18-25)", "Female", "Senior (18-25)"));
         }
         else if (be.isFemaleOnly) {
-            // Mohiniyattam, Kuchipudi, Kolam Drawing (Girls only; Suffix A, B, C)
-            list.push({ id: `${be.id}A`, name: `${be.name} (Sub Junior Girls, 9-13)`, baseId: be.id, categoryId: be.categoryId, gender: "Female", duration: be.duration, type: be.type, ageGroup: "Sub Junior (9-13)", isCompleted: false });
-            list.push({ id: `${be.id}B`, name: `${be.name} (Junior Girls, 13-18)`, baseId: be.id, categoryId: be.categoryId, gender: "Female", duration: be.duration, type: be.type, ageGroup: "Junior (13-18)", isCompleted: false });
-            list.push({ id: `${be.id}C`, name: `${be.name} (Senior Girls, 18-25)`, baseId: be.id, categoryId: be.categoryId, gender: "Female", duration: be.duration, type: be.type, ageGroup: "Senior (18-25)", isCompleted: false });
+            list.push(createObj("A", "(Sub Junior Girls, 9-13)", "Female", "Sub Junior (9-13)"));
+            list.push(createObj("B", "(Junior Girls, 13-18)", "Female", "Junior (13-18)"));
+            list.push(createObj("C", "(Senior Girls, 18-25)", "Female", "Senior (18-25)"));
         }
         else if (be.isMaleOnly) {
-            // Mantra Chanting, Ashtapadi, Sopana Sangeetham (Boys only; Suffix A, B, C)
-            list.push({ id: `${be.id}A`, name: `${be.name} (Sub Junior Boys, 9-13)`, baseId: be.id, categoryId: be.categoryId, gender: "Male", duration: be.duration, type: be.type, ageGroup: "Sub Junior (9-13)", isCompleted: false });
-            list.push({ id: `${be.id}B`, name: `${be.name} (Junior Boys, 13-18)`, baseId: be.id, categoryId: be.categoryId, gender: "Male", duration: be.duration, type: be.type, ageGroup: "Junior (13-18)", isCompleted: false });
-            list.push({ id: `${be.id}C`, name: `${be.name} (Senior Boys, 18-25)`, baseId: be.id, categoryId: be.categoryId, gender: "Male", duration: be.duration, type: be.type, ageGroup: "Senior (18-25)", isCompleted: false });
+            list.push(createObj("A", "(Sub Junior Boys, 9-13)", "Male", "Sub Junior (9-13)"));
+            list.push(createObj("B", "(Junior Boys, 13-18)", "Male", "Junior (13-18)"));
+            list.push(createObj("C", "(Senior Boys, 18-25)", "Male", "Senior (18-25)"));
         }
         else if (be.isGroupTiers) {
-            // Below 15 Years (A), 15–25 Years (B), Above 25 Years (C)
-            list.push({ id: `${be.id}A`, name: `${be.name} (Below 15 Years)`, baseId: be.id, categoryId: be.categoryId, gender: "NA", duration: be.duration, type: be.type, ageGroup: "Below 15 Years", isCompleted: false });
-            list.push({ id: `${be.id}B`, name: `${be.name} (15–25 Years)`, baseId: be.id, categoryId: be.categoryId, gender: "NA", duration: be.duration, type: be.type, ageGroup: "15–25 Years", isCompleted: false });
-            list.push({ id: `${be.id}C`, name: `${be.name} (Above 25 Years)`, baseId: be.id, categoryId: be.categoryId, gender: "NA", duration: be.duration, type: be.type, ageGroup: "Above 25 Years", isCompleted: false });
+            list.push(createObj("A", "(Below 15 Years)", "NA", "Below 15 Years"));
+            list.push(createObj("B", "(15–25 Years)", "NA", "15–25 Years"));
+            list.push(createObj("C", "(Above 25 Years)", "NA", "Above 25 Years"));
         }
         else if (be.isGroup46) {
-            // Debate: Below 15 Years (A), 15–25 Years (B); No Above 25
-            list.push({ id: `${be.id}A`, name: `${be.name} (Below 15 Years)`, baseId: be.id, categoryId: be.categoryId, gender: "NA", duration: be.duration, type: be.type, ageGroup: "Below 15 Years", isCompleted: false });
-            list.push({ id: `${be.id}B`, name: `${be.name} (15–25 Years)`, baseId: be.id, categoryId: be.categoryId, gender: "NA", duration: be.duration, type: be.type, ageGroup: "15–25 Years", isCompleted: false });
+            list.push(createObj("A", "(Below 15 Years)", "NA", "Below 15 Years"));
+            list.push(createObj("B", "(15–25 Years)", "NA", "15–25 Years"));
         }
         else if (be.isVanitha) {
-            // Group Dance, Cooking, etc. (10–25 Years: A, Above 25 Years: B; Female only)
-            list.push({ id: `${be.id}A`, name: `${be.name} (10–25 Years)`, baseId: be.id, categoryId: be.categoryId, gender: "Female", duration: be.duration, type: be.type, ageGroup: "10–25 Years", isCompleted: false });
-            list.push({ id: `${be.id}B`, name: `${be.name} (Above 25 Years)`, baseId: be.id, categoryId: be.categoryId, gender: "Female", duration: be.duration, type: be.type, ageGroup: "Above 25 Years", isCompleted: false });
+            list.push(createObj("A", "(10–25 Years)", "Female", "10–25 Years"));
+            list.push(createObj("B", "(Above 25 Years)", "Female", "Above 25 Years"));
         }
         else if (be.isVanitha54) {
-            // Kolam Drawing (Above 25 Years only: Code 54)
-            list.push({ id: `${be.id}`, name: `${be.name} (Above 25 Years)`, baseId: be.id, categoryId: be.categoryId, gender: "Female", duration: be.duration, type: be.type, ageGroup: "Above 25 Years", isCompleted: false });
+            list.push(createObj("", "(Above 25 Years)", "Female", "Above 25 Years"));
         }
         else if (be.isBalolsavam) {
-            // Suffix is just the code
-            list.push({ id: `${be.id}`, name: `${be.name} (Below 9 Years)`, baseId: be.id, categoryId: be.categoryId, gender: "NA", duration: be.duration, type: be.type, ageGroup: "Below 9 Years", isCompleted: false });
+            list.push(createObj("", "(Below 9 Years)", "NA", "Below 9 Years"));
         }
     });
     return list;
@@ -341,11 +350,13 @@ document.addEventListener("DOMContentLoaded", () => {
 function initApp() {
     setupAuthListeners();
     setupNavigation();
+    setupSidebarToggle();
     setupRoleSelector();
     setupFilters();
     setupParticipantForms();
     setupScoringPage();
     setupWinnersPage();
+    setupEventRegistrationAutocomplete();
 
     if (state.currentUser) {
         showAppShell();
@@ -383,6 +394,20 @@ function setupAuthListeners() {
             showAppShell();
         }
     });
+
+    const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+    const loginPassword = document.getElementById("loginPassword");
+    if (togglePasswordBtn && loginPassword) {
+        togglePasswordBtn.addEventListener("click", () => {
+            if (loginPassword.type === "password") {
+                loginPassword.type = "text";
+                togglePasswordBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>`;
+            } else {
+                loginPassword.type = "password";
+                togglePasswordBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg>`;
+            }
+        });
+    }
 
     const prefillBtns = document.querySelectorAll(".prefill-btn");
     prefillBtns.forEach(btn => {
@@ -426,6 +451,24 @@ function setupNavigation() {
     });
 }
 
+function setupSidebarToggle() {
+    const toggleBtn = document.getElementById("sidebarToggleBtn");
+    const sidebar = document.querySelector(".sidebar");
+    
+    if (toggleBtn && sidebar) {
+        // Restore collapsed state from localStorage
+        const isCollapsed = localStorage.getItem("sidebar-collapsed") === "true";
+        if (isCollapsed) {
+            sidebar.classList.add("collapsed");
+        }
+        
+        toggleBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("collapsed");
+            localStorage.setItem("sidebar-collapsed", sidebar.classList.contains("collapsed"));
+        });
+    }
+}
+
 function switchView(viewId) {
     const panels = document.querySelectorAll(".view-panel");
     panels.forEach(panel => panel.classList.remove("active"));
@@ -441,8 +484,42 @@ function switchView(viewId) {
         renderParticipantList();
     } else if (viewId === "add-participant") {
         resetAddParticipantForm();
-    } else if (viewId==="district-entry") {
-        renderDistrictEntry();
+        
+        // Lock Add Participant page for District Coordinators
+        const isAuthorized = state.currentRole === "System Admin" || state.currentRole === "State Coordinator";
+        const submitBtn = document.getElementById("btnSubmitForm");
+        const formInputs = document.querySelectorAll("#addParticipantForm input, #addParticipantForm select");
+        const validationBanner = document.getElementById("formValidationError");
+        
+        if (!isAuthorized) {
+            formInputs.forEach(input => input.disabled = true);
+            submitBtn.style.display = "none";
+            
+            validationBanner.style.display = "block";
+            validationBanner.style.backgroundColor = "#fffbeb";
+            validationBanner.style.borderColor = "#d97706";
+            validationBanner.style.color = "#92400e";
+            validationBanner.querySelector("strong").innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Read-Only Mode:
+            `;
+            validationBanner.querySelector("ul").innerHTML = "<li>District Coordinators are not authorized to register or edit participant profiles.</li>";
+        } else {
+            formInputs.forEach(input => {
+                if (input.id !== "formAge") input.disabled = false;
+            });
+            submitBtn.style.display = "block";
+            validationBanner.style.display = "none";
+            validationBanner.style.backgroundColor = "";
+            validationBanner.style.borderColor = "";
+            validationBanner.style.color = "";
+            validationBanner.querySelector("strong").innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                Form Validation Errors:
+            `;
+        }
+    } else if (viewId === "event-registration") {
+        renderEventRegistration();
     } else if (viewId === "scoring") {
         renderScoringPage();
     } else if (viewId === "winners") {
@@ -453,7 +530,7 @@ function switchView(viewId) {
         dashboard: "Leaderboard Standings (Wireframe)",
         participants: "Participation Master List",
         "add-participant": "Add Participant Profile",
-        "district-entry":"District State Shortlisting",
+        "event-registration": "State Level Event Registration",
         scoring: "Scoring Entry Panel",
         winners: "Winners Listing & Certificate Tool"
     };
@@ -695,6 +772,10 @@ function setupFilters() {
             renderParticipantList();
         });
     });
+
+    makeSelectSearchable("filterCategory", "Search Category...");
+    makeSelectSearchable("filterDistrict", "Search District...");
+    makeSelectSearchable("filterEvents", "Search Events...");
 }
 
 function renderParticipantList() {
@@ -769,6 +850,12 @@ function renderParticipantList() {
         const firstCat = firstEv ? state.getCategory(firstEv.categoryId) : null;
         const catName = firstCat ? firstCat.name : "N/A";
 
+        // Event names list
+        const eventNamesList = p.eventIds.map(evId => {
+            const ev = state.getEvent(evId);
+            return ev ? ev.name : evId;
+        }).join(", ");
+
         tr.innerHTML = `
             <td><strong style="color:var(--text-primary)">${p.id}</strong></td>
             <td><strong>${p.name}</strong></td>
@@ -776,6 +863,7 @@ function renderParticipantList() {
             <td>${new Date(p.dob).toLocaleDateString()}</td>
             <td>${p.district}</td>
             <td><span style="font-size:0.75rem;background:var(--bg-secondary);padding:0.15rem 0.4rem;border-radius:4px;font-weight:600;">${catName}</span></td>
+            <td><div style="font-size:0.8rem; font-weight:600; color:var(--text-secondary); max-width:200px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;" title="${eventNamesList}">${eventNamesList}</div></td>
             <td><div class="tag-list">${categoriesTags}</div></td>
         `;
         tbody.appendChild(tr);
@@ -822,11 +910,12 @@ function openParticipantDetails(id) {
             const div = document.createElement("div");
             div.style = "padding:0.5rem 0.75rem; border-radius:4px; background:var(--bg-primary); border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;";
             div.innerHTML = `
-                <div>
+                <div style="flex:1;">
                     <div style="font-size:0.8rem; font-weight:700;">${ev.name} [Code: ${ev.id}]</div>
                     <div style="font-size:0.7rem; color:var(--text-secondary)">Type: ${ev.type} | Group: ${ev.ageGroup}</div>
+                    <div style="font-size:0.65rem; color:var(--text-muted); font-style:italic; margin-top:0.2rem;">Description: ${ev.description || "No description"}</div>
                 </div>
-                <div>
+                <div style="margin-left:0.5rem;">
                     ${scoreText}
                 </div>
             `;
@@ -895,6 +984,7 @@ function deleteParticipant(id) {
 /* --- VIEW 3: Add / Edit Participant Form --- */
 let isEditingParticipant = false;
 let editingParticipantId = null;
+let uploadedPhotoBase64 = "";
 
 function setupParticipantForms() {
     const formDist = document.getElementById("formDistrict");
@@ -919,6 +1009,37 @@ function setupParticipantForms() {
 
     dobInput.addEventListener("change", onBioDataChange);
     genderSelect.addEventListener("change", onBioDataChange);
+
+    const photoInput = document.getElementById("formPhoto");
+    const photoPreview = document.getElementById("formPhotoPreview");
+
+    photoInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.type !== "image/jpeg") {
+            alert("Invalid file format! Only JPEG photos are allowed.");
+            photoInput.value = "";
+            photoPreview.innerHTML = '<span style="color:var(--text-muted);font-size:0.65rem;">80x80</span>';
+            uploadedPhotoBase64 = "";
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert("File is too large! Maximum allowed size is 5 MB.");
+            photoInput.value = "";
+            photoPreview.innerHTML = '<span style="color:var(--text-muted);font-size:0.65rem;">80x80</span>';
+            uploadedPhotoBase64 = "";
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            uploadedPhotoBase64 = event.target.result;
+            photoPreview.innerHTML = `<img src="${uploadedPhotoBase64}" style="width:100%; height:100%; object-fit:cover;">`;
+        };
+        reader.readAsDataURL(file);
+    });
 
     const form = document.getElementById("addParticipantForm");
     form.addEventListener("submit", (e) => {
@@ -1073,7 +1194,9 @@ function getEligibleEventsForParticipant(age, gender) {
 function resetAddParticipantForm() {
     isEditingParticipant = false;
     editingParticipantId = null;
+    uploadedPhotoBase64 = "";
     document.getElementById("formViewTitle").textContent = "Register New Participant";
+    document.getElementById("btnSubmitForm").textContent = "Save Registration";
     document.getElementById("addParticipantForm").reset();
     document.getElementById("formPhotoPreview").innerHTML = '<span style="color:var(--text-muted);font-size:0.65rem;">80x80</span>';
     
@@ -1082,7 +1205,7 @@ function resetAddParticipantForm() {
     
     document.getElementById("formEventPicker").style.display = "none";
     document.getElementById("formEventPickerNotice").style.display = "block";
-    document.getElementById("formEventPickerNotice").textContent = "Please enter Date of Birth and Gender to load eligible competition events.";
+    document.getElementById("formEventPickerNotice").textContent = "Please enter DOB and Gender to load eligible competition events.";
 }
 
 function prepopulateEditForm(id) {
@@ -1093,7 +1216,9 @@ function prepopulateEditForm(id) {
     isEditingParticipant = true;
     editingParticipantId = id;
     
-    document.getElementById("formViewTitle").textContent = `Edit Participant (${p.id})`;
+    document.getElementById("headerTitle").textContent = "Edit Participant Profile";
+    document.getElementById("formViewTitle").textContent = `Edit Participant Profile (${p.id})`;
+    document.getElementById("btnSubmitForm").textContent = "Update Profile";
     document.getElementById("formName").value = p.name;
     document.getElementById("formDOB").value = p.dob;
     document.getElementById("formAge").value = p.age;
@@ -1103,13 +1228,28 @@ function prepopulateEditForm(id) {
     document.getElementById("formMother").value = p.motherName;
 
     if (p.photo) {
-        document.getElementById("formPhotoPreview").innerHTML = `<img src="${p.photo}">`;
+        document.getElementById("formPhotoPreview").innerHTML = `<img src="${p.photo}" style="width:100%; height:100%; object-fit:cover;">`;
+        uploadedPhotoBase64 = p.photo;
+    } else {
+        uploadedPhotoBase64 = "";
     }
 
     renderFormEventPickerOnDemand(p.age, p.gender, p.eventIds);
+    
+    const isAuthorized = state.currentRole === "System Admin" || state.currentRole === "State Coordinator";
+    if (!isAuthorized) {
+        const formInputs = document.querySelectorAll("#addParticipantForm input, #addParticipantForm select");
+        formInputs.forEach(input => input.disabled = true);
+        document.getElementById("btnSubmitForm").style.display = "none";
+    }
 }
 
 function saveParticipant() {
+    if (state.currentRole !== "System Admin" && state.currentRole !== "State Coordinator") {
+        alert("Permission denied! Your Coordinator role does not have authorization to add or edit participant data.");
+        return;
+    }
+
     const name = document.getElementById("formName").value.trim();
     const dob = document.getElementById("formDOB").value;
     const age = calculateAgeAsOfJune2026(dob);
@@ -1130,6 +1270,7 @@ function saveParticipant() {
     if (!district) errors.push("District selection is required.");
     if (!fatherName) errors.push("Father's Name is required.");
     if (!motherName) errors.push("Mother's Name is required.");
+    if (!uploadedPhotoBase64) errors.push("Photo upload (JPEG, Max 5MB) is required.");
     if (eventIds.length === 0) errors.push("Please enroll the participant in at least one competition event.");
 
     // Max counts validations (Standard rules)
@@ -1173,7 +1314,7 @@ function saveParticipant() {
         fatherName,
         motherName,
         eventIds,
-        photo: ""
+        photo: uploadedPhotoBase64
     };
 
     let pId = "";
@@ -1253,6 +1394,8 @@ function setupScoringPage() {
     eventSelect.addEventListener("change", () => {
         renderScoringList(eventSelect.value);
     });
+
+    makeSelectSearchable("scoreEventSelect", "Search Event...");
 }
 
 function renderScoringPage() {
@@ -1425,6 +1568,10 @@ function setupWinnersPage() {
 
     document.getElementById("certCloseBtn").onclick = closeCertificateModal;
     document.getElementById("btnPrintCert").onclick = () => { window.print(); };
+
+    makeSelectSearchable("winFilterCategory", "Search Category...");
+    makeSelectSearchable("winFilterDistrict", "Search District...");
+    makeSelectSearchable("winFilterEvent", "Search Event...");
 }
 
 function renderWinnersList() {
@@ -1525,4 +1672,402 @@ function openCertificate(participantId, eventId) {
 function closeCertificateModal() {
     document.getElementById("certModalBackdrop").classList.remove("active");
     document.getElementById("certModal").classList.remove("active");
+}
+
+/* Lightweight select searchability helper */
+function makeSelectSearchable(selectId, placeholder) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    let searchInput = select.previousElementSibling;
+    const isAlreadySearchable = searchInput && searchInput.classList.contains("select-search-input");
+    
+    if (!isAlreadySearchable) {
+        searchInput = document.createElement("input");
+        searchInput.type = "text";
+        searchInput.placeholder = placeholder;
+        searchInput.className = "input-field select-search-input";
+        searchInput.style.marginBottom = "0.4rem";
+        searchInput.style.fontSize = "0.75rem";
+        searchInput.style.padding = "0.3rem 0.6rem";
+        
+        select.parentNode.insertBefore(searchInput, select);
+    }
+    
+    // Set initial text to current selected option text
+    const syncInputFromSelect = () => {
+        if (select.selectedIndex >= 0) {
+            const activeOpt = select.options[select.selectedIndex];
+            if (activeOpt && activeOpt.value !== "") {
+                searchInput.value = activeOpt.text;
+            } else {
+                searchInput.value = "";
+            }
+        } else {
+            searchInput.value = "";
+        }
+    };
+    
+    syncInputFromSelect();
+    
+    let originalOptions = Array.from(select.options);
+    
+    // Watch for dynamic updates to select options
+    const observer = new MutationObserver(() => {
+        originalOptions = Array.from(select.options);
+        // Sync search input if options changed and a value is selected
+        syncInputFromSelect();
+    });
+    observer.observe(select, { childList: true });
+    
+    // When typing in search box, filter options
+    const onSearchInput = () => {
+        const query = searchInput.value.toLowerCase();
+        const selectedValue = select.value;
+        
+        // Remove observer temporarily to prevent loop
+        observer.disconnect();
+        
+        select.innerHTML = "";
+        originalOptions.forEach(opt => {
+            if (opt.text.toLowerCase().includes(query) || opt.value === "") {
+                select.appendChild(opt);
+            }
+        });
+        
+        select.value = selectedValue;
+        
+        // Re-observe
+        observer.observe(select, { childList: true });
+        
+        select.dispatchEvent(new Event("change"));
+    };
+    
+    searchInput.oninput = onSearchInput;
+    
+    // Remove old event listener if it exists, or just assign new one
+    if (select._onSelectChange) {
+        select.removeEventListener("change", select._onSelectChange);
+    }
+    select._onSelectChange = () => {
+        syncInputFromSelect();
+    };
+    select.addEventListener("change", select._onSelectChange);
+    
+    // Handle focus / blur behavior for search input
+    searchInput.onfocus = () => {
+        searchInput.select(); // highlight all text so user can easily overwrite it
+    };
+    
+    searchInput.onblur = () => {
+        // If user left it empty or typed something that doesn't match, restore select's current text
+        setTimeout(() => {
+            if (select.selectedIndex >= 0) {
+                const activeOpt = select.options[select.selectedIndex];
+                if (activeOpt && activeOpt.value !== "") {
+                    searchInput.value = activeOpt.text;
+                    // Reset dropdown to show all options again (unfiltered)
+                    observer.disconnect();
+                    const selectedValue = select.value;
+                    select.innerHTML = "";
+                    originalOptions.forEach(opt => select.appendChild(opt));
+                    select.value = selectedValue;
+                    observer.observe(select, { childList: true });
+                } else {
+                    searchInput.value = "";
+                }
+            } else {
+                searchInput.value = "";
+            }
+        }, 200); // delay to let clicks register
+    };
+}
+
+/* Event Registration view logic */
+function renderEventRegistration() {
+    populateRegistrationDropdowns();
+    
+    const distSelect = document.getElementById("registrationDistrict");
+    const eventSelect = document.getElementById("registrationEvent");
+    
+    const onSelectionChange = () => {
+        updateEventRegistrationLists();
+    };
+    
+    distSelect.removeEventListener("change", onSelectionChange);
+    eventSelect.removeEventListener("change", onSelectionChange);
+    distSelect.addEventListener("change", onSelectionChange);
+    eventSelect.addEventListener("change", onSelectionChange);
+    
+    updateEventRegistrationLists();
+    
+    makeSelectSearchable("registrationDistrict", "Search District...");
+    makeSelectSearchable("registrationEvent", "Search Event...");
+}
+
+function populateRegistrationDropdowns() {
+    const distSelect = document.getElementById("registrationDistrict");
+    const eventSelect = document.getElementById("registrationEvent");
+    
+    const currentDist = distSelect.value;
+    const currentEvent = eventSelect.value;
+    
+    distSelect.innerHTML = '<option value="">Select District</option>';
+    DISTRICTS.forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d;
+        if (d === currentDist) opt.selected = true;
+        distSelect.appendChild(opt);
+    });
+    
+    eventSelect.innerHTML = '<option value="">Select Competition</option>';
+    const sortedEvents = [...state.events].sort((a,b) => {
+        const numA = parseInt(a.id);
+        const numB = parseInt(b.id);
+        if (numA !== numB) return numA - numB;
+        return a.id.localeCompare(b.id);
+    });
+    
+    sortedEvents.forEach(e => {
+        const opt = document.createElement("option");
+        opt.value = e.id;
+        opt.textContent = `${e.name} [Code: ${e.id}]`;
+        if (e.id === currentEvent) opt.selected = true;
+        eventSelect.appendChild(opt);
+    });
+}
+
+function updateEventRegistrationLists() {
+    const distSelect = document.getElementById("registrationDistrict");
+    const eventSelect = document.getElementById("registrationEvent");
+    
+    const dist = distSelect.value;
+    const evId = eventSelect.value;
+    
+    const regSection = document.getElementById("registrationListSection");
+    const eligSection = document.getElementById("eligibleListSection");
+    const regBody = document.getElementById("registeredEventParticipantsBody");
+    const eligBody = document.getElementById("eligibleEventParticipantsBody");
+    const nameSearchContainer = document.getElementById("registrationNameSearchContainer");
+    
+    if (!dist || !evId) {
+        regSection.style.display = "none";
+        eligSection.style.display = "none";
+        if (nameSearchContainer) nameSearchContainer.style.display = "none";
+        return;
+    }
+    
+    regSection.style.display = "block";
+    eligSection.style.display = "block";
+    if (nameSearchContainer) nameSearchContainer.style.display = "block";
+    
+    const registered = state.participants.filter(p => p.district === dist && p.eventIds.includes(evId));
+    regBody.innerHTML = "";
+    if (registered.length === 0) {
+        regBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:1rem;">No participants from this district registered for this event yet.</td></tr>';
+    } else {
+        const isAuthorized = state.currentRole === "System Admin" || state.currentRole === "State Coordinator";
+        registered.forEach(p => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong style="color:var(--text-primary)">${p.id}</strong></td>
+                <td><strong>${p.name}</strong></td>
+                <td>${p.gender}</td>
+                <td>${p.age}</td>
+                <td>
+                    <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.7rem; width:auto;" 
+                        onclick="deregisterParticipantFromEvent('${p.id}', '${evId}')" ${!isAuthorized ? 'disabled' : ''}>
+                        Deregister
+                    </button>
+                </td>
+            `;
+            regBody.appendChild(tr);
+        });
+    }
+    
+    eligBody.innerHTML = "";
+    const allDistrictParticipants = state.participants.filter(p => p.district === dist);
+    const eligibleList = allDistrictParticipants.filter(p => {
+        if (p.eventIds.includes(evId)) return false;
+        const eligibleEvents = getEligibleEventsForParticipant(p.age, p.gender);
+        return eligibleEvents.some(e => e.id === evId);
+    });
+    
+    if (eligibleList.length === 0) {
+        eligBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:1rem;">No available district participants are eligible for this event.</td></tr>';
+    } else {
+        const isAuthorized = state.currentRole === "System Admin" || state.currentRole === "State Coordinator";
+        eligibleList.forEach(p => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong style="color:var(--text-primary)">${p.id}</strong></td>
+                <td><strong>${p.name}</strong></td>
+                <td>${p.gender}</td>
+                <td>${p.age}</td>
+                <td>
+                    <button class="btn btn-primary" style="padding:0.25rem 0.5rem; font-size:0.7rem; width:auto;" 
+                        onclick="registerExistingParticipantForEvent('${p.id}', '${evId}')" ${!isAuthorized ? 'disabled' : ''}>
+                        Register
+                    </button>
+                </td>
+            `;
+            eligBody.appendChild(tr);
+        });
+    }
+}
+
+function setupEventRegistrationAutocomplete() {
+    const nameInput = document.getElementById("registrationNameInput");
+    const dropdown = document.getElementById("registrationNameDropdown");
+    const distSelect = document.getElementById("registrationDistrict");
+    const eventSelect = document.getElementById("registrationEvent");
+    
+    if (!nameInput || !dropdown) return;
+    
+    const closeDropdown = () => {
+        dropdown.style.display = "none";
+        dropdown.innerHTML = "";
+    };
+    
+    nameInput.addEventListener("input", () => {
+        const query = nameInput.value.trim().toLowerCase();
+        const dist = distSelect.value;
+        const evId = eventSelect.value;
+        
+        if (!dist || !evId) {
+            closeDropdown();
+            return;
+        }
+        
+        if (query.length === 0) {
+            closeDropdown();
+            return;
+        }
+        
+        // Find existing eligible participants from the selected district
+        const allDistrictParticipants = state.participants.filter(p => p.district === dist);
+        const eligibleList = allDistrictParticipants.filter(p => {
+            // Must not be already registered
+            if (p.eventIds.includes(evId)) return false;
+            // Must be eligible based on age/gender
+            const eligibleEvents = getEligibleEventsForParticipant(p.age, p.gender);
+            return eligibleEvents.some(e => e.id === evId);
+        });
+        
+        // Filter by name query
+        const matches = eligibleList.filter(p => p.name.toLowerCase().includes(query) || p.id.toLowerCase().includes(query));
+        
+        dropdown.innerHTML = "";
+        dropdown.style.display = "block";
+        
+        if (matches.length > 0) {
+            matches.forEach(p => {
+                const item = document.createElement("div");
+                item.className = "autocomplete-item";
+                item.innerHTML = `<strong>${p.name}</strong> <span style="font-size:0.75rem; color:var(--text-secondary);">(${p.id} &mdash; ${p.gender}, Age ${p.age})</span>`;
+                item.onclick = () => {
+                    registerExistingParticipantForEvent(p.id, evId);
+                    nameInput.value = "";
+                    closeDropdown();
+                };
+                dropdown.appendChild(item);
+            });
+        } else {
+            const noMatch = document.createElement("div");
+            noMatch.className = "autocomplete-item";
+            noMatch.style.color = "var(--text-secondary)";
+            noMatch.style.cursor = "default";
+            noMatch.textContent = "No matching eligible participants found.";
+            dropdown.appendChild(noMatch);
+        }
+        
+        // Always add option to create a new participant
+        const addNewItem = document.createElement("div");
+        addNewItem.className = "autocomplete-item add-new-item";
+        addNewItem.innerHTML = `<strong>+ Register "${nameInput.value}" as New Participant</strong>`;
+        addNewItem.onclick = () => {
+            const nameToRegister = nameInput.value.trim();
+            switchView("add-participant");
+            document.getElementById("formDistrict").value = dist;
+            document.getElementById("formName").value = nameToRegister;
+            nameInput.value = "";
+            closeDropdown();
+        };
+        dropdown.appendChild(addNewItem);
+    });
+    
+    // Close dropdown on click outside
+    document.addEventListener("click", (e) => {
+        if (!nameInput.contains(e.target) && !dropdown.contains(e.target)) {
+            closeDropdown();
+        }
+    });
+}
+
+function registerExistingParticipantForEvent(pId, evId) {
+    if (state.currentRole !== "System Admin" && state.currentRole !== "State Coordinator") {
+        alert("Permission denied! Your Coordinator role does not have authorization to register participants.");
+        return;
+    }
+    
+    const p = state.getParticipant(pId);
+    const ev = state.getEvent(evId);
+    if (!p || !ev) return;
+    
+    let litCount = 0;
+    let grpCount = 0;
+    let indCount = 0;
+
+    const testEventIds = [...p.eventIds, evId];
+
+    testEventIds.forEach(id => {
+        const e = state.getEvent(id);
+        if (e) {
+            if (e.type === "Literary") litCount++;
+            else if (e.type === "Group") grpCount++;
+            else if (e.type === "Individual") indCount++;
+        }
+    });
+
+    if (litCount > 3) {
+        alert(`Cannot register: Exceeded limits for Literary events (Maximum: 3). Current: ${litCount}`);
+        return;
+    }
+    if (grpCount > 3) {
+        alert(`Cannot register: Exceeded limits for Group events (Maximum: 3). Current: ${grpCount}`);
+        return;
+    }
+    if (indCount > 5) {
+        alert(`Cannot register: Exceeded limits for Individual events (Maximum: 5). Current: ${indCount}`);
+        return;
+    }
+    
+    p.eventIds.push(evId);
+    state.saveState();
+    alert(`Successfully registered ${p.name} for ${ev.name}!`);
+    updateEventRegistrationLists();
+    renderParticipantList();
+    renderDashboard();
+}
+
+function deregisterParticipantFromEvent(pId, evId) {
+    if (state.currentRole !== "System Admin" && state.currentRole !== "State Coordinator") {
+        alert("Permission denied! Your Coordinator role does not have authorization to deregister participants.");
+        return;
+    }
+    
+    const p = state.getParticipant(pId);
+    const ev = state.getEvent(evId);
+    if (!p || !ev) return;
+    
+    if (confirm(`Are you sure you want to deregister ${p.name} from the event "${ev.name}"?`)) {
+        p.eventIds = p.eventIds.filter(id => id !== evId);
+        state.scores = state.scores.filter(s => !(s.eventId === evId && s.participantId === pId));
+        state.saveState();
+        alert(`Successfully deregistered ${p.name} from "${ev.name}".`);
+        updateEventRegistrationLists();
+        renderParticipantList();
+        renderDashboard();
+    }
 }

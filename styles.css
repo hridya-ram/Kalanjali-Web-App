@@ -277,6 +277,11 @@ body {
     flex-direction: column;
     flex-shrink: 0;
     z-index: 10;
+    transition: margin-left var(--transition-speed) ease;
+}
+
+.sidebar.collapsed {
+    margin-left: calc(-1 * var(--sidebar-width));
 }
 
 .sidebar-logo {
@@ -408,6 +413,37 @@ header {
     justify-content: space-between;
     padding: 0 1.5rem;
     z-index: 9;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sidebar-toggle-btn {
+    background: #ffffff;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.sidebar-toggle-btn:hover {
+    border-color: var(--text-primary);
+    background-color: var(--bg-primary);
+}
+
+.sidebar-toggle-btn:focus {
+    outline: none;
+    border-color: var(--text-primary);
 }
 
 .header-title-section {
@@ -1413,3 +1449,48 @@ header {
         border-width: 15px;
     }
 }
+
+/* Autocomplete Name Search Dropdown Styles */
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: #ffffff;
+    border: 2px solid var(--border-color);
+    border-radius: 0 0 6px 6px;
+    margin-top: -2px; /* overlap input border */
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: var(--shadow-premium);
+}
+
+.autocomplete-item {
+    padding: 0.65rem 0.85rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--bg-primary);
+    text-align: left;
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-item:hover {
+    background-color: var(--bg-secondary);
+}
+
+.autocomplete-item.add-new-item {
+    font-weight: 600;
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+    border-top: 2px dashed var(--border-color);
+}
+
+.autocomplete-item.add-new-item:hover {
+    background-color: var(--border-color);
+}
+
